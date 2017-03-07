@@ -108,7 +108,7 @@ class Micemade_GitHubPluginUpdater {
 		$this->initPluginData();
 		$this->getRepoReleaseInfo();
 
-		$doUpdate = version_compare( $this->githubAPIResult->tag_name, $transient->checked[$this->slug] );
+		$doUpdate = version_compare( $this->githubAPIResult->tag_name, $transient->checked[$this->slug], '>' );
 
 		if ( $doUpdate )
 		{
