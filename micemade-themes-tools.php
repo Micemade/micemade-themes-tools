@@ -57,7 +57,7 @@ if( ! function_exists( 'micemade_themes_tools_updater' ) ) {
 				
 		require_once( plugin_dir_path( __FILE__ ) . 'github_updater.php' );
 		if ( is_admin() ) {
-			new Micemade_GitHubPluginUpdater( __FILE__, 'Micemade', "micemade-themes-tools" );
+			new Micemade_GitHub_Plugin_Updater( __FILE__, 'Micemade', "micemade-themes-tools" );
 		}
 		
 	}
