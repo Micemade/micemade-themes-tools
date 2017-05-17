@@ -3,7 +3,7 @@
 Plugin Name: Micemade themes tools
 Plugin URI: http://micemade.com
 Description: Used for Micemade themes. Extension plugin for theme setup wizard and few bonus functionalities.
-Version: 0.1.0
+Version: 0.1.1
 Author: Micemade themes
 Author URI: http://micemade.com
 
@@ -39,6 +39,8 @@ if( in_array( $current_theme , $micemade_themes ) ) {
 	// Adds inputs for author social links in WP admin - Users - Your profile
 	function micemade_micemade_add_to_author_profile( $contactmethods ) {
 	
+		$current_theme		= get_option( 'template' );
+		
 		$contactmethods['rss_url']			= 'RSS URL';
 		$contactmethods['google_profile']	= esc_html__("Google Profile URL", $current_theme );
 		$contactmethods['twitter_profile']	= esc_html__("Twitter Profile URL", $current_theme );
@@ -57,7 +59,7 @@ if( ! function_exists( 'micemade_themes_tools_updater' ) ) {
 				
 		require_once( plugin_dir_path( __FILE__ ) . 'github_updater.php' );
 		if ( is_admin() ) {
-			new Micemade_GitHubPluginUpdater( __FILE__, 'Micemade', "micemade-themes-tools" );
+			new Micemade_GitHub_Plugin_Updater( __FILE__, 'Micemade', "micemade-themes-tools" );
 		}
 		
 	}
