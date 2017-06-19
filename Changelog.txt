@@ -1,6 +1,11 @@
 == Changelog ==
-= 
-* 0.1.1 
-	- fix undefined $current_theme variable 
-= 
-* 0.1.0 - Initial Release
+ 
+= 0.1.1 =
+
+* fix undefined $current_theme variable 
+* Added social sharing links
+* Textdomain and translation file
+
+= 0.1.0 = 
+
+* Initial Release
