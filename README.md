@@ -25,11 +25,16 @@ A plugin that takes over the functions needed for Micemade themes setup / demo i
 
 **Changelog**
 
-= 0.1.0 =
+= 0.1.2 = 
 
-* Initial release.
+* Replaced support for "Adorn" theme with "Beautify" theme
 
 = 0.1.1 = 
 
 * Added social sharing links
 * Textdomain and translation file
+
+
+= 0.1.0 =
+
+* Initial release.
