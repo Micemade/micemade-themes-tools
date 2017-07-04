@@ -15,7 +15,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 function micemade_themes_tools_textdomain() {
 					
-	$lang_dir = apply_filters('micemade_themes_tools_lang_dir', trailingslashit( MICEMADE_ELEMENTS_DIR . 'languages') );
+	$lang_dir = apply_filters('micemade_themes_tools_lang_dir', trailingslashit(  plugin_dir_path( __FILE__ ) . 'languages') );
 
 	// Traditional WordPress plugin locale filter
 	$locale = apply_filters('plugin_locale', get_locale(), 'micemade-themes-tools');
