@@ -1,11 +1,18 @@
-== Changelog ==
- 
-= 0.1.1 =
+**Changelog**
+= 0.1.3 =
 
-* fix undefined $current_theme variable 
+* Added multiple themes support ( Ayame, Ambiance, Cloth, GoodFood )
+
+= 0.1.2 = 
+
+* Replaced support for "Adorn" theme with "Beautify" theme
+
+= 0.1.1 = 
+
 * Added social sharing links
 * Textdomain and translation file
 
-= 0.1.0 = 
 
-* Initial Release
+= 0.1.0 =
+
+* Initial release.
