@@ -3,7 +3,7 @@
 Plugin Name: Micemade themes tools
 Plugin URI: http://micemade.com
 Description: Used for Micemade themes. Extension plugin for theme setup wizard and few bonus functionalities.
-Version: 0.1.2
+Version: 0.1.3
 Author: Micemade themes
 Author URI: http://micemade.com
 Text Domain: micemade-themes-tools
@@ -38,7 +38,7 @@ function micemade_themes_tools_textdomain() {
 
 // Get info about currently active theme
 $current_theme		= get_option( 'template' );
-$micemade_themes	= array( "natura", "beautify", "cloth" );
+$micemade_themes	= array( 'natura', 'beautify', 'ayame', 'ambiance', 'cloth','goodfood' );
 
 // Check if active theme is a Micemade theme
 if( in_array( $current_theme , $micemade_themes ) ) {
