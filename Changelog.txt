@@ -1,17 +1,19 @@
 **Changelog**
-= 0.1.3 =
 
+= 0.1.4 =
+* Fixed the_content micemade_social_buttons priority to 999
+* Added support for Lillabelle theme
+
+= 0.1.3 =
 * Added multiple themes support ( Ayame, Ambiance, Cloth, GoodFood )
 
 = 0.1.2 = 
-
 * Replaced support for "Adorn" theme with "Beautify" theme
 
 = 0.1.1 = 
 
 * Added social sharing links
 * Textdomain and translation file
-
 
 = 0.1.0 =
 
