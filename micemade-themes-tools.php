@@ -3,7 +3,7 @@
 Plugin Name: Micemade themes tools
 Plugin URI: http://micemade.com
 Description: Used for Micemade themes. Extension plugin for theme setup wizard and few bonus functionalities.
-Version: 0.1.4
+Version: 0.1.5
 Author: Micemade themes
 Author URI: http://micemade.com
 Text Domain: micemade-themes-tools
@@ -14,7 +14,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
 
 function micemade_themes_tools_textdomain() {
-					
+
 	$lang_dir = apply_filters('micemade_themes_tools_lang_dir', trailingslashit(  plugin_dir_path( __FILE__ ) . 'languages') );
 
 	// Traditional WordPress plugin locale filter
@@ -38,7 +38,7 @@ function micemade_themes_tools_textdomain() {
 
 // Get info about currently active theme
 $current_theme		= get_option( 'template' );
-$micemade_themes	= array( 'natura', 'beautify', 'ayame', 'ambiance', 'cloth', 'goodfood', 'lillabelle' );
+$micemade_themes	= array( 'natura', 'beautify', 'ayame', 'inspace', 'cloth', 'goodfood', 'lillabelle' );
 
 // Check if active theme is a Micemade theme
 if( in_array( $current_theme , $micemade_themes ) ) {
