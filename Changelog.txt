@@ -7,7 +7,7 @@
 * Added support for "Lillabelle" theme
 
 = 0.1.3 =
-* Added multiple themes support ( Ayame, Ambiance, Cloth, GoodFood )
+* Added multiple themes support ( Ayame, Inspace, Cloth, GoodFood )
 
 = 0.1.2 = 
 * Replaced support for "Adorn" theme with "Beautify" theme
