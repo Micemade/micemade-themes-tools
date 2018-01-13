@@ -1,82 +1,152 @@
 <?php
-/*
-Plugin Name: Micemade themes tools
-Plugin URI: http://micemade.com
-Description: Used for Micemade themes. Extension plugin for theme setup wizard and few bonus functionalities.
-Version: 0.1.5
-Author: Micemade themes
-Author URI: http://micemade.com
-Text Domain: micemade-themes-tools
+/**
+ * Plugin Name: Micemade themes tools
+ * Plugin URI: http://micemade.com
+ * Description: Used for Micemade themes. Extension plugin for theme setup wizard and few bonus functionalities.
+ * Version: 0.1.6
+ * Author: Micemade themes
+ * Author URI: http://micemade.com
+ * Text Domain: micemade-themes-tools
 
-Copyright: © 2017 Micemade.
-License: GNU General Public License v3.0
-License URI: http://www.gnu.org/licenses/gpl-3.0.html
-*/
-
-function micemade_themes_tools_textdomain() {
-
-	$lang_dir = apply_filters('micemade_themes_tools_lang_dir', trailingslashit(  plugin_dir_path( __FILE__ ) . 'languages') );
-
-	// Traditional WordPress plugin locale filter
-	$locale = apply_filters('plugin_locale', get_locale(), 'micemade-themes-tools');
-	$mofile = sprintf('%1$s-%2$s.mo', 'micemade-themes-tools', $locale);
-
-	// Setup paths to current locale file
-	$mofile_local = $lang_dir . $mofile;
-
-	if ( file_exists( $mofile_local ) ) {
-		// Look in the /wp-content/plugins/micemade-themes-tools/languages/ folder
-		load_textdomain('micemade-themes-tools', $mofile_local);
-	} else {
-		// Load the default language files
-		load_plugin_textdomain('micemade-themes-tools', false, $lang_dir);
-	}
-
-	return false;
+ * Copyright: © 2017 Micemade.
+ * License: GNU General Public License v3.0
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.html
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
+class Micemade_Themes_Tools {
+	
+	private static $instance = null;
 
-// Get info about currently active theme
-$current_theme		= get_option( 'template' );
-$micemade_themes	= array( 'natura', 'beautify', 'ayame', 'inspace', 'cloth', 'goodfood', 'lillabelle' );
+	public $micemade_theme_active = false;
+	
+	public static function get_instance() {
+		if ( ! self::$instance )
+			self::$instance = new self;
+		return self::$instance;
+	}
 
-// Check if active theme is a Micemade theme
-if( in_array( $current_theme , $micemade_themes ) ) {
-
-	// Theme setup wizard - import product attributes helper - register atts taxonomies to import attribute terms
-	function micemade_import_wc_attibutes_helper( $attribute_name ) {
+	public function init() {
 		
-		register_taxonomy(
-			'pa_' . $attribute_name,
-			apply_filters( 'woocommerce_taxonomy_objects_' . $attribute_name, array( 'product' ) ),
-			apply_filters( 'woocommerce_taxonomy_args_' . $attribute_name, array(
-				'hierarchical' => true,
-				'show_ui'      => false,
-				'query_var'    => true,
-				'rewrite'      => false,
-			) )
-		);
-		register_taxonomy_for_object_type( 'pa_' . $attribute_name, 'product' );
+		add_action( 'init', array( self::$instance, 'Load_plugin' ) );
+
 	}
 	
-	// Adds inputs for author social links in WP admin - Users - Your profile
-	function micemade_micemade_add_to_author_profile( $contactmethods ) {
+	/**
+	 * Load plugin
+	 * 
+	 * @return void
+	 * 
+	 * fired upon 'init' hook - to check if Micemade theme is active
+	 * delay plugin method after theme initializes
+	 */
+	public function Load_plugin() {
+		
+		if( self::$instance->Activation_check() ) {
+			// Translations:
+			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain') );
+			// Social button bellow the main content
+			add_filter( 'the_content', array( self:: $instance ,'social_buttons' ), 999 );
+			// User additional data fields
+			add_filter( 'user_contactmethods',  array( self:: $instance ,'add_to_author_profile' ), 10, 1);
+			// Github updater
+			self::$instance->updater();
+
+			$this->micemade_theme_active = true;
+
+		}else{
+			add_action( 'admin_notices', array( self::$instance ,'admin_notice') );
+
+			$this->micemade_theme_active = false;
+		}
 	
-		$current_theme		= get_option( 'template' );
-		
-		$contactmethods['rss_url']			= 'RSS URL';
-		$contactmethods['google_profile']	= esc_html__("Google Profile URL", $current_theme, 'micemade-themes-tools' );
-		$contactmethods['twitter_profile']	= esc_html__("Twitter Profile URL", $current_theme, 'micemade-themes-tools' );
-		$contactmethods['facebook_profile'] = esc_html__("Facebook Profile URL", $current_theme, 'micemade-themes-tools' );
-		$contactmethods['linkedin_profile']	= esc_html__("Linkedin Profile URL", $current_theme, 'micemade-themes-tools' );
-		$contactmethods['skype']			= esc_html__("Skype","micemade-themes-tools");
-		
-		return $contactmethods;
 	}
-	add_filter( 'user_contactmethods', 'micemade_micemade_add_to_author_profile', 10, 1);
+	/**
+	 * Activation check
+	 *
+	 * @return bool $micemade_theme_active
+	 */
+	public function Activation_check() {
+		
+		$current_is_micemade_theme = false;
+		
+		// To deprecate
+		// Array of supported Micemade Themes
+		$micemade_themes	= array( 'natura', 'beautify', 'ayame','lillabelle','inspace' );
+		if( is_child_theme() ) {
+			$parent_theme		= wp_get_theme();
+			$active_theme		= $parent_theme->get( 'Template' );
+		}else{
+			$active_theme		= get_option( 'template' );
+		}
+		$active_theme_supported = in_array( $active_theme, $micemade_themes );
+		// end deprecate
+
+		$current_theme_supported = current_theme_supports( 'micemade-themes-tools' );
+		
+		// Deprecate $active_theme_supported and leave only $current_theme_supported
+		if ( $current_theme_supported || $active_theme_supported ) {
+			$current_is_micemade_theme = true;
+		}
+
+		return $current_is_micemade_theme;
 	
-	// SOCIAL SHARING BUTTONS
-	function micemade_social_buttons( $content ) {
+	}
+
+	/**
+	 * Admin notice
+	 * 
+	 * @return void
+	 * 
+	 * notice if this plugin is active without Micemade theme
+	 */
+	public function admin_notice() {
+		
+		$class = "error updated settings-error notice is-dismissible";
+		$message = __( '"Micemade Themes Tools" is active without active Micemade theme. Please, either activate Micemade theme, or deactivate "Micemade Themes Tools" plugin.', 'micemade-themes-tools' );
+        echo "<div class=\"$class\"><p>$message</p></div>"; 
+		
+	}
+
+	/**
+	 * Load textdomain
+	 *
+	 * @return void
+	 * 
+	 * load plugin translations
+	 */
+	public function load_textdomain() {
+
+		$lang_dir = apply_filters('micemade_themes_tools_lang_dir', trailingslashit(  plugin_dir_path( __FILE__ ) . 'languages') );
+
+		// Traditional WordPress plugin locale filter
+		$locale = apply_filters('plugin_locale', get_locale(), 'micemade-themes-tools');
+		$mofile = sprintf('%1$s-%2$s.mo', 'micemade-themes-tools', $locale);
+
+		// Setup paths to current locale file
+		$mofile_local = $lang_dir . $mofile;
+
+		if ( file_exists( $mofile_local ) ) {
+			// Look in the /wp-content/plugins/micemade-themes-tools/languages/ folder
+			load_textdomain('micemade-themes-tools', $mofile_local);
+		} else {
+			// Load the default language files
+			load_plugin_textdomain('micemade-themes-tools', false, $lang_dir);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Social buttons
+	 *
+	 * @param [html] $content
+	 * @return [html] $content . $social_buttons
+	 */
+	public function social_buttons( $content ) {
+		
 		global $post;
 		$permalink	= get_permalink($post->ID);
 		$thumb		= wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full' );
@@ -110,22 +180,69 @@ if( in_array( $current_theme , $micemade_themes ) ) {
 		}
 		return $content;
 	}
-	add_filter( 'the_content', 'micemade_social_buttons', 999 );
+
+	/**
+	 * Add to author profile
+	 *
+	 * @param [type] $contactmethods
+	 * @return void
+	 * 
+	 * additional input fields for author profile
+	 */
+	public function add_to_author_profile( $contactmethods ) {
 	
-}
-// Plugin Github updater function
-if( ! function_exists( 'micemade_themes_tools_updater' ) ) {
-	
-	function micemade_themes_tools_updater() {
-				
+		$current_theme		= get_option( 'template' );
+		
+		$contactmethods['rss_url']			= 'RSS URL';
+		$contactmethods['google_profile']	= esc_html__( "Google Profile URL", $current_theme, 'micemade-themes-tools' );
+		$contactmethods['twitter_profile']	= esc_html__( "Twitter Profile URL", $current_theme, 'micemade-themes-tools' );
+		$contactmethods['facebook_profile'] = esc_html__( "Facebook Profile URL", $current_theme, 'micemade-themes-tools' );
+		$contactmethods['linkedin_profile']	= esc_html__( "Linkedin Profile URL", $current_theme, 'micemade-themes-tools' );
+		$contactmethods['skype']			= esc_html__( "Skype","micemade-themes-tools" );
+		
+		return $contactmethods;
+	}
+
+	/**
+	 * Updater
+	 *
+	 * @return void
+	 * 
+	 * include Github based plugin updater class
+	 */
+	private function updater() {
+		
 		require_once( plugin_dir_path( __FILE__ ) . 'github_updater.php' );
 		if ( is_admin() ) {
 			new Micemade_GitHub_Plugin_Updater( __FILE__, 'Micemade', "micemade-themes-tools" );
 		}
 		
 	}
+
 }
-// run the updater
-micemade_themes_tools_updater();
-// Load plugin textdomain
-micemade_themes_tools_textdomain();
+// Initialize the plugin
+Micemade_Themes_Tools::get_instance()->init();
+/**
+ * Import WC attributes helper
+ *
+ * @param [string] $attribute_name
+ * @return void
+ * 
+ * import product attributes helper :
+ * register atts taxonomies to import attribute terms
+ * used by Micemade Theme Setup Wizard
+ */
+function micemade_import_wc_attibutes_helper( $attribute_name ) {
+	
+	register_taxonomy(
+		'pa_' . $attribute_name,
+		apply_filters( 'woocommerce_taxonomy_objects_' . $attribute_name, array( 'product' ) ),
+		apply_filters( 'woocommerce_taxonomy_args_' . $attribute_name, array(
+			'hierarchical' => true,
+			'show_ui'      => false,
+			'query_var'    => true,
+			'rewrite'      => false,
+		) )
+	);
+	register_taxonomy_for_object_type( 'pa_' . $attribute_name, 'product' );
+}
