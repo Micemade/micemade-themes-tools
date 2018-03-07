@@ -24,6 +24,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 A plugin that takes over the functions needed for Micemade themes setup / demo import, but goes under "plugin teritory" ( CPT taxonomies setup ), user_contactmethods ( custom user fields ) and more (in future). Not required for Micemade themes, but recommended.
 
 **Changelog**
+= 0.1.7
+* Improved filter for adding social sharing icons
+* Security and WP standards check and fixes
+
 = 0.1.6
 * Changed the way for supporting themes using add_theme_support() / current_theme_supports()
 * Rewrite plugin to OOP
