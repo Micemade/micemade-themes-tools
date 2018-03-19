@@ -53,30 +53,29 @@ class Micemade_Themes_Tools {
 	 */
 	public function init() {
 
-		add_action( 'init', array( self::$instance, 'Load_plugin' ) );
+		add_action( 'init', array( self::$instance, 'load_plugin' ) );
 
 	}
 
 	/**
 	 * Load plugin
-	 * 
+	 *
 	 * @return void
-	 * 
-	 * fired upon 'init' hook - to check if Micemade theme is active
-	 * delay plugin method after theme initializes
+	 * fired upon 'init' hook - to check if Micemade theme is active.
+	 * delay plugin method after theme initializes.
 	 */
-	public function Load_plugin() {
+	public function load_plugin() {
 
-		if( self::$instance->activation_check() ) {
+		if ( self::$instance->activation_check() ) {
 
 			// Translations.
-			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain') );
+			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
 
 			// Social button bellow the main content.
-			add_filter( 'the_content', array( self:: $instance , 'social_buttons' ) );
+			add_filter( 'the_content', array( self::$instance, 'social_buttons' ) );
 
 			// User additional data fields.
-			add_filter( 'user_contactmethods', array( self:: $instance, 'add_to_author_profile' ), 10, 1 );
+			add_filter( 'user_contactmethods', array( self::$instance, 'add_to_author_profile' ), 10, 1 );
 
 			// Github updater.
 			self::$instance->updater();
@@ -85,7 +84,7 @@ class Micemade_Themes_Tools {
 
 		} else {
 
-			add_action( 'admin_notices', array( self::$instance , 'admin_notice' ) );
+			add_action( 'admin_notices', array( self::$instance, 'admin_notice' ) );
 
 			$this->micemade_theme_active = false;
 		}
@@ -101,7 +100,8 @@ class Micemade_Themes_Tools {
 		$current_is_micemade_theme = false;
 
 		// Array of supported Micemade Themes -to deprecate.
-		$micemade_themes	= array( 'natura', 'beautify', 'ayame', 'lillabelle', 'inspace' );
+		$micemade_themes = array( 'natura', 'beautify', 'ayame', 'lillabelle', 'inspace' );
+
 		if ( is_child_theme() ) {
 			$parent_theme = wp_get_theme();
 			$active_theme = $parent_theme->get( 'Template' );
@@ -124,16 +124,15 @@ class Micemade_Themes_Tools {
 
 	/**
 	 * Admin notice
-	 * 
+	 *
 	 * @return void
-	 * 
-	 * notice if this plugin is active without Micemade theme
+	 * notice if this plugin is active without Micemade theme.
 	 */
 	public function admin_notice() {
 
-		$class = "error updated settings-error notice is-dismissible";
+		$class   = 'error updated settings-error notice is-dismissible';
 		$message = __( '"Micemade Themes Tools" is active without active Micemade theme. Please, either activate Micemade theme, or deactivate "Micemade Themes Tools" plugin.', 'micemade-themes-tools' );
-		echo '<div class="' . esc_attr( $class ) . '"><p>' . esc_html( $message ) . '</p></div>'; 
+		echo '<div class="' . esc_attr( $class ) . '"><p>' . esc_html( $message ) . '</p></div>';
 
 	}
 
@@ -141,12 +140,11 @@ class Micemade_Themes_Tools {
 	 * Load textdomain
 	 *
 	 * @return void
-	 * 
-	 * load plugin translations
+	 * load plugin translations.
 	 */
 	public function load_textdomain() {
 
-		$lang_dir = apply_filters( 'micemade_themes_tools_lang_dir', trailingslashit(  plugin_dir_path( __FILE__ ) . 'languages') );
+		$lang_dir = apply_filters( 'micemade_themes_tools_lang_dir', trailingslashit( plugin_dir_path( __FILE__ ) . 'languages' ) );
 
 		// Traditional WordPress plugin locale filter
 		$locale = apply_filters( 'plugin_locale', get_locale(), 'micemade-themes-tools' );
@@ -175,16 +173,16 @@ class Micemade_Themes_Tools {
 	public function social_buttons( $content ) {
 
 		global $post;
-		$permalink = get_permalink($post->ID);
+		$permalink = get_permalink( $post->ID );
 		$thumb     = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full' );
 		$title     = get_the_title();
-		$title     = str_replace(" ","&nbsp;",$title);
-		$share_txt = esc_html__( "Share this on ","micemade-themes-tools" );
+		$title     = str_replace( ' ', '&nbsp;', $title );
+		$share_txt = esc_html__( 'Share this on ', 'micemade-themes-tools' );
 
-		if( in_the_loop() && !is_feed() && !is_home() && !is_page() && !is_archive() ) {
+		if ( in_the_loop() && ! is_feed() && ! is_home() && ! is_page() && ! is_archive() ) {
 
-			$content = $content . '<div class="share-post"><p>' . esc_html__( 'Share this','micemade-themes-tools' ) . '</p><div class="social">
-			<a class="icon-twitter tip-top share-link" href="http://twitter.com/share?text='. esc_attr( $title ) . '&amp;url='. esc_url ( $permalink ) . '"
+			$content = $content . '<div class="share-post"><p>' . esc_html__( 'Share this', 'micemade-themes-tools' ) . '</p><div class="social">
+			<a class="icon-twitter tip-top share-link" href="http://twitter.com/share?text=' . esc_attr( $title ) . '&amp;url=' . esc_url( $permalink ) . '"
 				onclick="window.open(this.href, \'twitter-share\', \'width=550,height=235\');return false;" title="' . esc_attr( $share_txt ) . 'Twitter">
 				<i class="fa fa-twitter" aria-hidden="true"></i>
 			</a>
@@ -242,7 +240,7 @@ class Micemade_Themes_Tools {
 
 		require_once( plugin_dir_path( __FILE__ ) . 'github_updater.php' );
 		if ( is_admin() ) {
-			new Micemade_GitHub_Plugin_Updater( __FILE__, 'Micemade', "micemade-themes-tools" );
+			new Micemade_GitHub_Plugin_Updater( __FILE__, 'Micemade', 'micemade-themes-tools' );
 		}
 
 	}
