@@ -3,7 +3,7 @@
  * Plugin Name: Micemade themes tools
  * Plugin URI: http://micemade.com
  * Description: Used for Micemade themes. Extension plugin for theme setup wizard and few bonus functionalities.
- * Version: 0.1.7
+ * Version: 0.1.8
  * Author: Micemade themes
  * Author URI: http://micemade.com
  * Text Domain: micemade-themes-tools
@@ -11,6 +11,9 @@
  * Copyright: © 2017 Micemade.
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
+ *
+ * @package WordPress
+ * @subpackage Micemade Themes Tools
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -77,6 +80,12 @@ class Micemade_Themes_Tools {
 			// User additional data fields.
 			add_filter( 'user_contactmethods', array( self::$instance, 'add_to_author_profile' ), 10, 1 );
 
+			// Custom filters/hooks.
+			self::$instance->custom_filters_hooks();
+
+			// Custom sidebars.
+			self::$instance->custom_sidebars();
+
 			// Github updater.
 			self::$instance->updater();
 
@@ -90,6 +99,7 @@ class Micemade_Themes_Tools {
 		}
 
 	}
+
 	/**
 	 * Activation check
 	 *
@@ -110,7 +120,6 @@ class Micemade_Themes_Tools {
 		}
 		$active_theme_supported = in_array( $active_theme, $micemade_themes );
 		// end deprecate.
-
 		$current_theme_supported = current_theme_supports( 'micemade-themes-tools' );
 
 		// Deprecate $active_theme_supported and leave only $current_theme_supported.
@@ -139,18 +148,18 @@ class Micemade_Themes_Tools {
 	/**
 	 * Load textdomain
 	 *
-	 * @return void
+	 * @return boolean
 	 * load plugin translations.
 	 */
 	public function load_textdomain() {
 
 		$lang_dir = apply_filters( 'micemade_themes_tools_lang_dir', trailingslashit( plugin_dir_path( __FILE__ ) . 'languages' ) );
 
-		// Traditional WordPress plugin locale filter
+		// Traditional WordPress plugin locale filter.
 		$locale = apply_filters( 'plugin_locale', get_locale(), 'micemade-themes-tools' );
 		$mofile = sprintf( '%1$s-%2$s.mo', 'micemade-themes-tools', $locale );
 
-		// Setup paths to current locale file
+		// Setup paths to current locale file.
 		$mofile_local = $lang_dir . $mofile;
 
 		if ( file_exists( $mofile_local ) ) {
@@ -167,7 +176,7 @@ class Micemade_Themes_Tools {
 	/**
 	 * Social buttons
 	 *
-	 * @param html $content - output html with social icons
+	 * @param html $content - output html with social icons.
 	 * @return html $content
 	 */
 	public function social_buttons( $content ) {
@@ -211,7 +220,6 @@ class Micemade_Themes_Tools {
 	 *
 	 * @param array $contactmethods - additional input fields for author profile.
 	 * @return $contactmethods
-	 *
 	 */
 	public function add_to_author_profile( $contactmethods = array() ) {
 
@@ -230,6 +238,24 @@ class Micemade_Themes_Tools {
 	}
 
 	/**
+	 * Custom filters / hooks
+	 *
+	 * @return void
+	 */
+	public function custom_filters_hooks() {
+		require_once plugin_dir_path( __FILE__ ) . 'includes/custom-filters-hooks.php';
+	}
+
+	/**
+	 * Custom sidebars
+	 *
+	 * @return void
+	 */
+	public function custom_sidebars() {
+		require_once plugin_dir_path( __FILE__ ) . 'includes/custom-sidebars.php';
+	}
+
+	/**
 	 * GitHub Updater
 	 *
 	 * @return void
@@ -237,9 +263,9 @@ class Micemade_Themes_Tools {
 	 * include Github based plugin updater class
 	 */
 	private function updater() {
-
-		require_once( plugin_dir_path( __FILE__ ) . 'github_updater.php' );
 		if ( is_admin() ) {
+
+			require_once plugin_dir_path( __FILE__ ) . 'github_updater.php';
 			new Micemade_GitHub_Plugin_Updater( __FILE__, 'Micemade', 'micemade-themes-tools' );
 		}
 
@@ -251,7 +277,7 @@ Micemade_Themes_Tools::get_instance()->init();
 /**
  * Import WC attributes helper
  *
- * @param [string] $attribute_name
+ * @param string $attribute_name - name of the attribute.
  * @return void
  *
  * import product attributes helper :
@@ -263,12 +289,14 @@ function micemade_import_wc_attibutes_helper( $attribute_name ) {
 	register_taxonomy(
 		'pa_' . $attribute_name,
 		apply_filters( 'woocommerce_taxonomy_objects_' . $attribute_name, array( 'product' ) ),
-		apply_filters( 'woocommerce_taxonomy_args_' . $attribute_name, array(
-			'hierarchical' => true,
-			'show_ui'      => false,
-			'query_var'    => true,
-			'rewrite'      => false,
-		) )
+		apply_filters(
+			'woocommerce_taxonomy_args_' . $attribute_name, array(
+				'hierarchical' => true,
+				'show_ui'      => false,
+				'query_var'    => true,
+				'rewrite'      => false,
+			)
+		)
 	);
 	register_taxonomy_for_object_type( 'pa_' . $attribute_name, 'product' );
 }
