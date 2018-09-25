@@ -3,7 +3,7 @@
  * Plugin Name: Micemade themes tools
  * Plugin URI: http://micemade.com
  * Description: Used for Micemade themes. Extension plugin for theme setup wizard and few bonus functionalities.
- * Version: 0.1.8
+ * Version: 0.1.9
  * Author: Micemade themes
  * Author URI: http://micemade.com
  * Text Domain: micemade-themes-tools
@@ -188,7 +188,16 @@ class Micemade_Themes_Tools {
 		$title     = str_replace( ' ', '&nbsp;', $title );
 		$share_txt = esc_html__( 'Share this on ', 'micemade-themes-tools' );
 
-		if ( in_the_loop() && ! is_feed() && ! is_home() && ! is_page() && ! is_archive() ) {
+		/*
+		// If current page is:
+		// in the WP loop and
+		// not feed and
+		// not homepage and
+		// not archive
+		// not Elementor Template ( commonly for Maintenance mode )
+		// show social media links
+		*/
+		if ( in_the_loop() && ! is_feed() && ! is_home() && ! is_page() && ! is_archive() && 'elementor_library' !== $post->post_type ) {
 
 			$content = $content . '<div class="share-post"><p>' . esc_html__( 'Share this', 'micemade-themes-tools' ) . '</p><div class="social">
 			<a class="icon-twitter tip-top share-link" href="http://twitter.com/share?text=' . esc_attr( $title ) . '&amp;url=' . esc_url( $permalink ) . '"

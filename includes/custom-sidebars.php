@@ -77,8 +77,8 @@ function mmtt_add_sidebar_metabox() {
  * CUSTOM SIDEBAR CALLBACK
  * prints the box content.
  *
- * @param object $post - post object
- * @return $output
+ * @param object $post - post object.
+ * @return void
  */
 function mmtt_custom_sidebar_callback( $post ) {
 	global $wp_registered_sidebars;
@@ -122,7 +122,7 @@ function mmtt_custom_sidebar_callback( $post ) {
 /**
  * SAVE SIDEBAR POSTDATA
  *
- * @param int $post_id
+ * @param int $post_id - id of the post.
  * @return void
  */
 function mmtt_save_sidebar_postdata( $post_id ) {

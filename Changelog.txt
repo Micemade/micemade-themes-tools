@@ -1,4 +1,15 @@
 **Changelog**
+= 0.1.9
+* Social sharing icons discarded for Elementor templates (elementor_library CPT)
+
+= 0.1.8
+* Custom sidebars functionality transferred from Micamde themes to here.
+* More WP standards compliance
+
+= 0.1.7
+* Improved filter for adding social sharing icons
+* Security and WP standards check and fixes
+
 = 0.1.6
 * Changed the way for supporting themes using add_theme_support() / current_theme_supports()
 * Rewrite plugin to OOP
